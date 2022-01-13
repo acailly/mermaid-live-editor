@@ -32,6 +32,24 @@
 					mermaid.initialize(Object.assign({}, JSON.parse(state.mermaid)));
 					mermaid.render('graph-div', code, (svgCode) => {
 						container.innerHTML = svgCode;
+						const nodeItems = container.querySelectorAll('.node');
+						nodeItems.forEach(function (nodeItem: HTMLElement) {
+							nodeItem.onclick = function () {
+								// node id format is "flowchart-[node name]-[random number]"
+								const sourceNodeName = nodeItem.id.split('-')[1];
+								const newNodeName = prompt('Create a new node');
+								if (newNodeName) {
+									codeStore.update((state) => {
+										const changes = {
+											code: state.code + `\n${sourceNodeName} --> ${newNodeName}`,
+											updateEditor: true,
+											updateDiagram: true
+										};
+										return { ...state, ...changes };
+									});
+								}
+							};
+						});
 					});
 					view.parentElement.scrollTop = scroll;
 					error = false;
